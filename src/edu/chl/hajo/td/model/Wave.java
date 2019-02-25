@@ -51,20 +51,17 @@ public class Wave {
         while (creepIterator.hasNext()) {
             Creep creep = creepIterator.next();
 
-            Point2D creepPos              = creep.getPos();
-            List<Point2D> creepPathPoints = creep.getPath().getPoints();
-            Point2D lastPoint             = creepPathPoints.get(creepPathPoints.size() - 1);
-            double creepSpeed             = creep.getSpeed();
+            Point2D creepPos        = creep.getPos();
+            List<Point2D> creepPath = creep.getPath().getPoints();
+            Point2D lastPoint       = creepPath.get(creepPath.size() - 1);
+            double creepSpeed       = creep.getSpeed();
 
             boolean isFinished = creepPos.epsilonEquals(lastPoint, creepSpeed);
 
             if (isFinished) {
                 finishedCreeps.add(creep);
                 creepIterator.remove();
-                continue;
-            }
-
-            creep.move();
+            } else creep.move();
         }
     }
 
