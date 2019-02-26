@@ -25,20 +25,12 @@ abstract public class Entity {
     @Setter
     private Vector2D dir = INIT_DIR;
 
-    public void findDir(Point2D targetPoint) {
-        dir = new Vector2D(targetPoint.getX() - getX(),targetPoint.getY() - getY());
+    public void targetDir(Point2D targetPoint) {
+        dir = new Vector2D(targetPoint.getX() - pos.getX(),targetPoint.getY() - pos.getY());
     }
 
     public void addPos(Vector2D v) {
         pos = pos.add(v);
     }
 
-    public double getX() {
-        return pos.getX();
-    }
-
-
-    public double getY() {
-        return pos.getY();
-    }
 }

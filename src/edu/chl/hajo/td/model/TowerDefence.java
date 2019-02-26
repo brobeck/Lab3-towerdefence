@@ -1,5 +1,7 @@
 package edu.chl.hajo.td.model;
 
+import edu.chl.hajo.td.model.creeps.Creep;
+import edu.chl.hajo.td.model.towers.Tower;
 import edu.chl.hajo.td.util.Point2D;
 import lombok.Getter;
 
@@ -39,6 +41,9 @@ public class TowerDefence {
     @Getter
     private int waveNr = 0;
 
+    @Getter
+    private List<Tower> towers = new ArrayList<>();
+
     public TowerDefence(TDMap map, List<Wave> waves) {
         this.map = map;
         this.waves = waves;
@@ -46,10 +51,45 @@ public class TowerDefence {
 
     // Update the model
     public void update(long now) {
+        shootTowers(now);
         waves.get(waveNr).spawn(now);
         waves.get(waveNr).move();
     }
 
+    public void addTower(Tower tower) {
+        towers.add(tower);
+    }
+
+    public void shootTowers(long now) {
+        for(Tower tower : towers) {
+            if (now - tower.getLastShot() > tower.getCoolDown()) {
+                tower.setLastShot(now);
+
+                Creep target = findTarget(tower);
+
+                if (target != null) {
+                    tower.targetDir(target.getPos());
+                    boolean dead = target.dealDamage(tower.getFirePower());
+
+                    if (dead) {
+                        waves.get(waveNr).kill(target);
+                    }
+                }
+            }
+        }
+    }
+
+    public Creep findTarget(Tower tower) {
+        for(Creep creep : waves.get(waveNr).getCreeps()) {
+            double distance = creep.getPos().distance(tower.getPos());
+
+            if(distance < tower.getRange()) {
+                return creep;
+            }
+        }
+
+        return null;
+    }
 
     // TODO
 

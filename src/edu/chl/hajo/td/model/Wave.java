@@ -61,19 +61,25 @@ public class Wave {
             if (isFinished) {
                 finishedCreeps.add(creep);
                 creepIterator.remove();
-            } else creep.move();
+            } else {
+                creep.move();
+            }
         }
     }
 
     public void spawn(long now) {
         if (now - lastSpawnedCreep > spawnDelay) {
+            lastSpawnedCreep = now;
             int totalCreeps = creeps.size() + finishedCreeps.size() + deadCreeps.size();
 
             if (totalCreeps < maxCreeps) {
-                lastSpawnedCreep = now;
                 creeps.add(new Creep(prototype));
             }
         }
     }
 
+    public void kill(Creep creep) {
+        creeps.remove(creep);
+        deadCreeps.add(creep);
+    }
 }

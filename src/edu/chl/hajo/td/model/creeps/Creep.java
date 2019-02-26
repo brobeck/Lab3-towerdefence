@@ -7,7 +7,6 @@ import edu.chl.hajo.td.util.Vector2D;
 import lombok.Getter;
 import lombok.Setter;
 
-//import javax.swing.text.html.parser.Entity;
 import java.util.Iterator;
 
 import static edu.chl.hajo.td.model.TowerDefence.TILE_SIZE;
@@ -22,12 +21,10 @@ import static java.lang.System.out;
 public class Creep extends Entity {
     @Getter
     private final Path path;
-
     @Getter
     private final Iterator<Point2D> pathIterator;
-
     @Getter
-    private Point2D nextCorner;
+    private Point2D nextPoint;
 
     @Setter
     @Getter
@@ -45,7 +42,7 @@ public class Creep extends Entity {
     public Creep(double speed, Path path, int maxHp, int killPoints, int damage) {
         this.path = path;
         this.pathIterator = path.getPoints().iterator();
-        this.nextCorner = pathIterator.next();
+        this.nextPoint = pathIterator.next();
 
         this.speed = speed;
         this.hp = maxHp;
@@ -53,13 +50,13 @@ public class Creep extends Entity {
         this.killPoints = killPoints;
         this.damage = damage;
 
-        super.setPos(nextCorner);
-        super.setWidth(-1);
-        super.setHeight(-1);
+        super.setPos(nextPoint);
+        super.setWidth(10);
+        super.setHeight(10);
     }
 
     public Creep(Path path) {
-        this(1.5, path, 100, 100, 50);
+        this(1.5, path, 500, 100, 50);
     }
 
     public Creep(Creep other) {
@@ -67,31 +64,17 @@ public class Creep extends Entity {
     }
 
     public void move(){
-        if (getPos().epsilonEquals(nextCorner, speed)) {
-            nextCorner = pathIterator.next();
-            findDir(nextCorner);
+        if (getPos().epsilonEquals(nextPoint, speed)) {
+            nextPoint = pathIterator.next();
+            targetDir(nextPoint);
         }
 
         addPos(getDir().scale(speed));
     }
 
-    /*
-    public Vector2D findDir() {
-        Point2D targetPoint = nextCorner();
-        return new Vector2D(targetPoint.getX() - super.getX(),targetPoint.getY() - super.getY());
+    public boolean dealDamage(double damageDealt) {
+        hp -= damageDealt;
+        out.println(hp);
+        return hp <= 0; //Did it die?
     }
-
-    public Point2D nextCorner() {
-        return path.getPoints().get(nextCornerIndex);
-    }
-
-    public void move(){
-        if (super.getPos().epsilonEquals(nextCorner(), speed)) {
-            nextCornerIndex++;
-            dir = findDir();
-        }
-
-        super.setPos(super.getPos().add(dir.scale(speed)));
-    }
-    */
 }

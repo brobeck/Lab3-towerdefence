@@ -3,6 +3,7 @@ package edu.chl.hajo.td.view;
 import edu.chl.hajo.td.model.*;
 
 import edu.chl.hajo.td.model.creeps.Creep;
+import edu.chl.hajo.td.model.towers.Tower;
 import edu.chl.hajo.td.util.Point2D;
 
 import javafx.animation.AnimationTimer;
@@ -18,9 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import static edu.chl.hajo.td.model.TowerDefence.*;
-import static javafx.scene.paint.Color.BLACK;
-import static javafx.scene.paint.Color.DARKORANGE;
-import static javafx.scene.paint.Color.RED;
+import static javafx.scene.paint.Color.*;
 
 
 /*
@@ -33,7 +32,7 @@ public class TowerDefenceGUI extends Application {
 
     // Objects we're working with right now, used below in step 1-4
     private TowerDefence td;
-    private Creep c;
+    private Creep tower;
     private Wave w;
     private Path p;
 
@@ -88,6 +87,7 @@ public class TowerDefenceGUI extends Application {
 
     // TODO STEP 3
 
+    /*
     @Override
     public void init() {
         TDTile[][] logicalTile = new TDTile[20][20];
@@ -118,10 +118,9 @@ public class TowerDefenceGUI extends Application {
         clearScreen();
         render(td);
         renderPath(p);
-    }
+    }*/
 
 
-    /*
      // TODO STEP 4
     @Override
     public void init() {
@@ -138,9 +137,9 @@ public class TowerDefenceGUI extends Application {
                 "12,12", "3,12", "3,17", "17,17",
                 "17,6", "20,6");
         p = new Path(0, strPts, TILE_SIZE);
-        c = new Creep(p);
+        tower = new Creep(p);
         Wave wave = new Wave(5, 100_000_000,
-                1_000_000_000, c);
+                1_000_000_000, tower);
 
         List<Wave> waves = Arrays.asList(wave);
 
@@ -149,6 +148,9 @@ public class TowerDefenceGUI extends Application {
         // Add tower at center for some tile
         td.addTower(new Tower(
                 new Point2D(4 * TILE_SIZE + TILE_SIZE / 2, 6 * TILE_SIZE + TILE_SIZE / 2)));
+
+        td.addTower(new Tower(
+                new Point2D(10 * TILE_SIZE + TILE_SIZE / 2, 15 * TILE_SIZE + TILE_SIZE / 2)));
     }
 
     private void update(long now) {
@@ -159,13 +161,23 @@ public class TowerDefenceGUI extends Application {
         clearScreen();
         render(td);
     }
-    */
+
     // ------------------ Render -----------------------------
 
     private void render(TowerDefence td) {
         clearScreen();
         Wave wave = td.getWaves().get(td.getWaveNr());
         renderWave(wave);
+        renderTowers(td.getTowers());
+    }
+
+    private void renderTowers(List<Tower> towers) {
+        gc.setFill(YELLOW);
+        for(Tower tower : towers) {
+            fillRect(tower.getPos(), tower.getWidth(), tower.getHeight());
+            strokeLine(tower.getPos(), tower.getPos().add(tower.getDir().scale(15)));
+            strokeOval(tower.getPos(), tower.getRange() * 2, tower.getRange() * 2);
+        }
     }
 
     private void renderWave(Wave wave) {
@@ -278,6 +290,12 @@ public class TowerDefenceGUI extends Application {
         double xTopLeft = pos.getX() - width / 2;
         double yTopLeft = pos.getY() - height / 2;
         gc.fillOval(xTopLeft, yTopLeft, width, height);
+    }
+
+    private void strokeOval(Point2D pos, double width, double height) {
+        double xTopLeft = pos.getX() - width / 2;
+        double yTopLeft = pos.getY() - height / 2;
+        gc.strokeOval(xTopLeft, yTopLeft, width, height);
     }
 
     private void strokeLine(Point2D start, Point2D end) {
